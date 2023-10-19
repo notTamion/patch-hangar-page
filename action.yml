@@ -1,0 +1,30 @@
+name: Patch Hangar Page
+on:
+  push:
+    paths:
+      - 'README.md'
+    branches:
+      - master
+      - main
+jobs:
+  patch-hangar-page:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get JWT
+      id: getjwt
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://hangar.papermc.io/api/v1/authenticate?apiKey=${{ secrets.HANGAR_API_KEY }}'
+        method: 'POST'
+    - name: Get ReadMe
+      id: getreadme
+      uses: jaywcjlove/github-action-read-file@main
+      with:
+        path: README.md
+    - name: Patch Page
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://hangar.papermc.io/api/v1/pages/editmain/${{ secrets.HANGAR_SLUG }}'
+        method: 'PATCH'
+        customHeaders: '{"Content-Type": "application/json", "Authorization": "${{ fromJson(steps.getjwt.outputs.response).token }}"}'
+        data: '${{ steps.getreadme.outputs.content }}'
