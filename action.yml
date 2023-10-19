@@ -1,13 +1,4 @@
 name: Patch Hangar Page
-author: Tamion
-description: Automatically Patches your Projects Hangar Page with your README.md
-inputs:
-  hangar-api-key:
-    description: 'Your hangar api key'
-    required: true
-  hangar-slug:
-    description: 'Project Slug of the Project'
-    required: true
 on:
   push:
     paths:
@@ -23,7 +14,7 @@ jobs:
       id: getjwt
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'https://hangar.papermc.io/api/v1/authenticate?apiKey=${{ github.event.inputs.hangar-api-key }}'
+        url: 'https://hangar.papermc.io/api/v1/authenticate?apiKey=${{ secrets.HANGAR_API_KEY }}'
         method: 'POST'
     - name: Get ReadMe
       id: getreadme
@@ -33,7 +24,7 @@ jobs:
     - name: Patch Page
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'https://hangar.papermc.io/api/v1/pages/editmain/${{ github.event.inputs.hangar-slug }}'
+        url: 'https://hangar.papermc.io/api/v1/pages/editmain/${{ secrets.HANGAR_SLUG }}'
         method: 'PATCH'
         customHeaders: '{"Content-Type": "application/json", "Authorization": "${{ fromJson(steps.getjwt.outputs.response).token }}"}'
         data: '${{ steps.getreadme.outputs.content }}'
