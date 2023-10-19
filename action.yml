@@ -1,4 +1,6 @@
 name: Patch Hangar Page
+author: Tamion
+description: Automatically Patches your Projects Hangar Page with your README.md
 on:
   push:
     paths:
